@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 def islower(c):
-    if ord(c) in range('a', 'z'):
+    if ord('a') <= ord('z'):
         return True
-    else
+    else:
         return False
