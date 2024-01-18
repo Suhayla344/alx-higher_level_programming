@@ -2,5 +2,6 @@
 
 if __name__ == "__main__":
     from add_0 import add
-    x, y = 1, 2
-    print("{} + {} = {}".format(x, y, add(x, y)))
+    a = 1
+    b = 2
+    print("{} + {} = {}".format(a, b, add(a, b)))
