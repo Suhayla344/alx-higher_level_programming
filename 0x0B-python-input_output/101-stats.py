@@ -1,19 +1,59 @@
 #!/usr/bin/python3
+"""Reads from standard input and computes metrics.
+
+After every ten lines or the input of a keyboard interruption (CTRL + C),
+prints the following statistics:
+    - Total file size up to that point.
+    - Count of read status codes up to that point.
 """
-Adding an attribute manually
-"""
 
 
-def add_attribute(obj, string1, string2):
-    """Add a new attribute to an object if possible.
+def print_stats(size, status_codes):
+    """Print accumulated metrics.
 
-        Args:
-            obj (any): The object to add an attribute to.
-            att (str): The name of the attribute to add to obj.
-            value (any): The value of att.
-        Raises:
-            TypeError: If the attribute cannot be added.
+    Args:
+        size (int): The accumulated read file size.
+        status_codes (dict): The accumulated count of status codes.
     """
-    if not hasattr(obj, "__dict__"):
-        raise TypeError("can't add new attribute")
-    obj.__dict__.update({string1: string2})
+    print("File size: {}".format(size))
+    for key in sorted(status_codes):
+        print("{}: {}".format(key, status_codes[key]))
+
+
+if __name__ == "__main__":
+    import sys
+
+    size = 0
+    status_codes = {}
+    valid_codes = ['200', '301', '400', '401', '403', '404', '405', '500']
+    count = 0
+
+    try:
+        for line in sys.stdin:
+            if count == 10:
+                print_stats(size, status_codes)
+                count = 1
+            else:
+                count += 1
+
+            line = line.split()
+
+            try:
+                size += int(line[-1])
+            except (IndexError, ValueError):
+                pass
+
+            try:
+                if line[-2] in valid_codes:
+                    if status_codes.get(line[-2], -1) == -1:
+                        status_codes[line[-2]] = 1
+                    else:
+                        status_codes[line[-2]] += 1
+            except IndexError:
+                pass
+
+        print_stats(size, status_codes)
+
+    except KeyboardInterrupt:
+        print_stats(size, status_codes)
+        raise
